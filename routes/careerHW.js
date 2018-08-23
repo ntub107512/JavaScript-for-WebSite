@@ -13,63 +13,63 @@ var pool = require('./lib/db.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+	//------------------------------------------
+	// 如尚未登入, 轉至未登入頁面
+	//------------------------------------------
+	if(!authorize.isPass(req)){
+		res.render(authorize.illegalURL, {});
+		return;
+	}
   //------------------------------------------
-  // 如尚未登入, 轉至未登入頁面
-  //------------------------------------------
-  if(!authorize.isPass(req)){
-    res.render(authorize.illegalURL, {});
-    return;
-  }
-  //------------------------------------------
-  var memNo=req.session.memNo;
-  var hwansCount=0;
-  var checkNoCount=0;
-  var checkNoRate=0;
-  var noCheckHw=0;
+	var memNo=req.session.memNo;
+	var hwansCount=0;
+	var checkNoCount=0;
+	var checkNoRate=0;
+	var classNo;
+	var classfileNoCnt;
+	var classNoCnt;
+	var classData;
+	var classFileData;
 
-  
-    pool.query('select count(*) as cnt1 from hwans', function(err, results) {
-      if (err)throw err;
-      hwansCount=results[0].cnt1; 
-    pool.query('select count(*) as cnt from hwans where checks="yes"', function(err, results) {
-      if (err)throw err;
-      
-      checkNoCount=results[0].cnt; 
-      pool.query(' SELECT a.*, b.*,c.classFileNo,c.classNo, d.classNo, e.* FROM hwans a, homework b, classfile c, class d, tmember e WHERE a.checks="no" and a.hwNo=b.hwNo and c.classNo=d.classNo and c.classFileNo=b.classFileNo and e.memNo=?',[memNo], function(err, results) {
-        if (err)throw err;
+ 	pool.query('SELECT count(*) as cnt1 from hwans', function(err, results) {
+		if (err)throw err;
+		hwansCount=results[0].cnt1; 
+		console.log(hwansCount);
+
+		pool.query('SELECT count(*) as cnt from hwans where checks="no"', function(err, results) {
+			if (err)throw err;
+			checkNoCount=results[0].cnt; 
+			console.log(checkNoCount);
+
+			pool.query('SELECT count(*) AS classCnt FROM class WHERE memNo=?',[memNo],function(err, results) {
+				classNoCnt=results[0].classCnt;
+				//console.log(classNoCnt);
         
-        noCheckHw=hwansCount-checkNoCount;
-        checkNoRate= ((checkNoCount/hwansCount)*100); //計算幾%
-  
-        res.render('careerHW', {memNo:req.session.memNo, tmemName:req.session.tmemName ,memTitle:req.session.memTitle,picture:req.session.picture,data:results,checkNoCount:checkNoCount,checkNoRate:checkNoRate,noCheckHw:noCheckHw});
-      });   
-    });
-    });
-  });
-  
-  module.exports = router;
+				pool.query('SELECT * FROM class WHERE memNo=?',[memNo],function(err, results) {
+					classNo=results[0].classNo;
+					classData=results;
+					//console.log(classData);
 
+					pool.query('SELECT count(*) AS fileNoCnt FROM classfile a, class b WHERE a.classNo=? and b.memNo=? and a.classNo=b.classNo',[classNo,memNo],function(err, results) {
+						classfileNoCnt=results[0].fileNoCnt;
+						//console.log(classfileNoCnt);
+            
+						pool.query('SELECT * FROM classfile WHERE classNo=?',[classNo],function(err, results) {
+							classFileData=results;
+							//console.log(classFileData);
 
-/*
-  pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
-  
-  pool.query('select a.*, b.*, c.* from hwans a, smember b, homework c where a.checks="no" and a.memNo=? and a.hwNo=?',[memNo,hwNo], function(err, results) {
-    if (err)throw err;
-
-  pool.query('select count(*) as cnt1 from hwans', function(err, results) {
-    if (err)throw err;
-    hwansCount=results[0].cnt1; 
-    
-    pool.query('select count(*) as cnt from hwans where checks="yes"', function(err, results) {
-      if (err)throw err;
-      checkNoCount=results[0].cnt; 
-      noCheckHw=hwansCount-checkNoCount;
-      checkNoRate= ((checkNoCount/hwansCount)*100); //計算幾%
-      res.render('careerHW', {memNo:req.session.memNo, memName:req.session.memName ,memTitle:req.session.memTitle,picture:req.session.picture,data:results,checkNoCount:checkNoCount,checkNoRate:checkNoRate,noCheckHw:noCheckHw});
-    });   
-  });
-  });
-  });
+							pool.query('SELECT a.*, b.*,c.classFileNo,c.classNo,d.classNo,f.*,g.* FROM hwans a, homework b, classfile c, class d,smember f,tmember g WHERE a.checks="no" and a.hwNo=b.hwNo and c.classNo=d.classNo and c.classFileNo=b.classFileNo and d.memNo=? and f.memNo=a.memNo and g.memNo=?',[memNo,memNo], function(err, results) {
+								if (err)throw err;
+								checkNoRate= (((hwansCount-checkNoCount)/hwansCount)*100).toFixed(2); //計算幾%
+								console.log(checkNoRate);
+								res.render('careerHW', {memNo:req.session.memNo, tmemName:req.session.tmemName, memTitle:req.session.memTitle, picture:req.session.picture, data:results, checkNoCount:checkNoCount, checkNoRate:checkNoRate, classNoCnt:classNoCnt, classfileNoCnt:classfileNoCnt, classData:classData, classFileData:classFileData});
+							}); 
+            			}); 
+          			}); 
+        		});   
+      		});
+    	});
+  	});
 });
-
-module.exports = router;*/
+  
+module.exports = router;

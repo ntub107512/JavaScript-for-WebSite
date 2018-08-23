@@ -64,14 +64,15 @@ router.get('/', function(req, res, next) {
         var totalLine=results[0].cnt;
         var totalPage=Math.ceil(totalLine/linePerPage);
 
-        pool.query('select a.classNo,a.joinDate,a.memNo,b.memNo,b.memName,c.classNo,c.className from joinclass a,smember b ,class c where b.memNo=? and a.memNo=? and a.classNo IS NOT NULL and a.classNo=c.classNo limit ?, ?',[memNo,memNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
+        pool.query('select a.classNo,a.joinDate,a.memNo,b.memNo,b.smemName,c.classNo,c.className from joinclass a,smember b ,class c where b.memNo=? and a.memNo=? and a.classNo IS NOT NULL and a.classNo=c.classNo limit ?, ?',[memNo,memNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
             if (err) {
                 res.render('addFail', {});
+            }else if(results.length==0){
+                res.render('courseEmpty', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
             }else{
-
               console.log(results.length);
                 var recordNo=(pageNo-1)*linePerPage+1;
-                res.render('careerCourseS', {data:results, pageNo:pageNo, totalLine:totalLine, totalPage:totalPage, startPage:startPage, linePerPage:linePerPage, navSegments:navSegments,memNo:req.session.memNo, memName:req.session.memName, memTitle:req.session.memTitle,picture:req.session.picture});   
+                res.render('careerCourseS', {data:results, pageNo:pageNo, totalLine:totalLine, totalPage:totalPage, startPage:startPage, linePerPage:linePerPage, navSegments:navSegments,memNo:req.session.memNo, smemName:req.session.smemName, memTitle:req.session.memTitle,picture:req.session.picture});   
             }
         }); 
     }); 

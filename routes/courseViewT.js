@@ -58,21 +58,21 @@ router.get('/', function(req, res, next) {
   //------------------------------------------
     var memNo=req.session.memNo;
     var className=req.query.className;
-    var describe=req.query.describe.describe;
     pool.query('select count(*) as cnt from classfile',  function(err, results) {
         if (err)throw err;
 
         var totalLine=results[0].cnt;
         var totalPage=Math.ceil(totalLine/linePerPage);
 
-        pool.query('select a.*,b.* from class a,classfile b where a.className=? AND a.classNo=b.classNo limit ?, ?',[className,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
+        pool.query('select a.*,b.*,c.* from class a,classfile b,cfvid c where a.className=? AND a.classNo=b.classNo AND c.classfileNo=b.classfileNo limit ?, ?',[className,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
             if (err) {
                 res.render('addFail', {});
             }else{
 
               console.log(results.length);
+              console.log(results);
                 var recordNo=(pageNo-1)*linePerPage+1;
-                res.render('courseViewT', {data:results, pageNo:pageNo, totalLine:totalLine, totalPage:totalPage, startPage:startPage, linePerPage:linePerPage, navSegments:navSegments,memNo:req.session.memNo, memName:req.session.memName, memTitle:req.session.memTitle,picture:req.session.picture,className:className,describe:describe});   
+                res.render('courseViewT', {data:results, pageNo:pageNo, totalLine:totalLine, totalPage:totalPage, startPage:startPage, linePerPage:linePerPage, navSegments:navSegments,memNo:req.session.memNo, memName:req.session.memName, memTitle:req.session.memTitle,picture:req.session.picture,className:className});   
             }
         }); 
     }); 

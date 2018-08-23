@@ -67,13 +67,16 @@ router.post('/', function(req, res) {
 
     var memNo=req.session.memNo;
     var diaNo=req.query.diaNo;
+
+    var memTitle=req.session.memTitle;
+
     console.log("----------------------");
     console.log(diaNo);
     console.log("----------------------");
 	// 如果有選擇圖片
     if (typeof req.file != 'undefined'){
         diaPic=req.file.filename;   //取得上傳照片新名稱             
-    }
+    
    
     pool.query('UPDATE diary SET tagNo=?, diaDate=?, diaPic=?, mood=?, content=?,weather=? where diaNo=? AND memNo=?', [tagNo, diaDate, diaPic, mood, content, weather,diaNo,memNo],function(err, rows, fields) {
         if (err){
@@ -86,13 +89,39 @@ router.post('/', function(req, res) {
             res.render('diaryAddFail', {});     //新增失敗
         }else{
 
-           
-            pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
-                res.render('diaryUpdateSuccess', {memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});  //新增成功
-            }); 
-        }
+                if(memTitle="大學生"){
+                    pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
+                        res.render('diaryUpdateSuccess', {memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});  //新增成功
+                    }); 
+                }else{
+                    pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
+                        res.render('diaryUpdateSuccess', {memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});  //新增成功
+                    }); 
+                }
+            
+            }
         });
-    })
+
+        }else{
+
+            pool.query('UPDATE diary SET tagNo=?, diaDate=?, mood=?, content=?,weather=? where diaNo=? AND memNo=?', [tagNo, diaDate, mood, content, weather,diaNo,memNo],function(err, rows, fields) {
+                if (err){
+                    res.render('diaryAddFail', {});     //新增失敗
+                }else{
+        
+                        if(memTitle="大學生"){
+                            pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
+                                res.render('diaryUpdateSuccess', {memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});  //新增成功
+                            }); 
+                        }else{
+                            pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
+                                res.render('diaryUpdateSuccess', {memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});  //新增成功
+                            }); 
+                        }            
+                    }
+        });
+            }
+    });
 });
 
 module.exports = router;

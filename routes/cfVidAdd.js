@@ -54,6 +54,8 @@ router.post('/', function(req, res){
     
     var classNo=req.query.classNo;
 
+    var date=req.param("date");
+
 	if (typeof req.file != 'undefined'){
         video=req.file.filename;   //取得上傳影片新名稱             
     }
@@ -67,13 +69,15 @@ router.post('/', function(req, res){
     }
     var newData3={
         title:title,
-        classNo:classNo
+        classNo:classNo,
+        date:date
     }
 
     var fileNoData
     var vidNoData
     var hwNoData
 
+   
     pool.query('INSERT INTO classfile SET ?', newData3, function(err, rows, fields) {
         if (err){
             res.render('addFail', {});   

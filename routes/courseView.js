@@ -67,7 +67,7 @@ router.get('/', function(req, res, next) {
       var totalPage=Math.ceil(totalLine/linePerPage);
       console.log(classNo);
 
-      pool.query('select a.*,b.* from classfile a,class b where a.classNo=? AND b.classNo=? limit ?, ?',[classNo,classNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
+      pool.query('select a.*,b.*,c.* from classfile a,class b,cfvid c where a.classNo=? AND b.classNo=? and c.classFileNo=a.classFileNo limit ?, ?',[classNo,classNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
           if (err) {
               res.render('addFail', {});
           }else{
@@ -85,7 +85,7 @@ router.get('/', function(req, res, next) {
         var totalPage=Math.ceil(totalLine/linePerPage);
         console.log(classNo);
   
-        pool.query('select a.*,b.* from classfile a,class b where a.classNo=? AND b.classNo=? limit ?, ?',[classNo,classNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
+        pool.query('select a.*,b.*,c.* from classfile a,class b,cfvid c where a.classNo=? AND b.classNo=? and c.classFileNo=a.classFileNo limit ?, ?',[classNo,classNo,(pageNo-1)*linePerPage, linePerPage], function(err, results) {
             if (err) {
                 res.render('addFail', {});
             }else{

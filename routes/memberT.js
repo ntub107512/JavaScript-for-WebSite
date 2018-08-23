@@ -24,7 +24,6 @@ router.get('/', function(req, res, next) {
   //------------------------------------------
   var memNo=req.session.memNo;
   var memTitle=req.session.memTitle;
-  console.log(memTitle);
   if(memTitle=="大學生"){
     pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
         res.render('memberT', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});

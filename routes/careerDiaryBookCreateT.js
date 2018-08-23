@@ -28,9 +28,9 @@ router.get('/', function(req, res, next) {
       }else{
         diaryTagData=results;
       }
-      pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
+      pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
     
-          res.render('careerDiaryContentCreateS', {diaryTagData:diaryTagData,memNo:req.session.memNo,smemName:req.session.smemName,memTitle:req.session.memTitle,data:results});
+          res.render('careerDiaryBookCreateT', {diaryTagData:diaryTagData,memNo:req.session.memNo,memName:req.session.memName,memTitle:req.session.memTitle,data:results});
      }); 
     });
   });

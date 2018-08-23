@@ -30,7 +30,7 @@ router.get('/', function(req, res, next) {
       }
       pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
     
-          res.render('careerDiaryContentCreateS', {diaryTagData:diaryTagData,memNo:req.session.memNo,smemName:req.session.smemName,memTitle:req.session.memTitle,data:results});
+          res.render('careerDiaryBookCreateS', {diaryTagData:diaryTagData,memNo:req.session.memNo,smemName:req.session.memName,memTitle:req.session.memTitle,data:results});
      }); 
     });
   });

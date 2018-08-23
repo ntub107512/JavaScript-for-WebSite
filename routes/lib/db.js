@@ -7,7 +7,7 @@ var pool  = mysql.createPool({
     user: 'root',
     password: 'mysql',
     host: '127.0.0.1',
-    database: 'naturetest', 
+    database: 'nature-test', 
     waitForConnections : true, 
     connectionLimit : 10       
 });

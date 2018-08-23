@@ -20,12 +20,30 @@ if(!authorize.isPass(req)){
   return;
 }
 
+var diaryTagData;
 var memNo=req.session.memNo;
 
 var tagNo=req.query.tagNo;
 
-    pool.query('select a.diaDate,a.mood,a.weather,a.content,a.diaPic,b.memNo,b.memTitle,b.picture,b.memName,c.tagName from diary a,smember b, diarytag c where a.tagNo=? and b.memNo=? and c.tagNo=?', [tagNo,memNo,tagNo], function(err, results) {
-        res.render('careerDiaryContentS', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
+    pool.query('select a.*,b.*,c.tagName from diary a,smember b, diarytag c where a.tagNo=? and a.memNo=? and b.memNo=? and c.tagNo=?', [tagNo,memNo,memNo,tagNo], function(err, results) {
+        if(results.length==0){
+            //------------------	
+            // 先取出日記tag資料
+            //------------------
+            pool.query('select * from diarytag', function(err, results) {       
+                if (err) {
+                diaryTagData=[];
+                }else{
+                diaryTagData=results;
+                }
+            });
+            pool.query('select * from smember where memNo=?',[memNo] ,function(err, results) {     
+                res.render('careerDiaryContentCreateS', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results,diaryTagData:diaryTagData});
+            });   
+        }else{
+            res.render('careerDiaryContentS', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
+        }
+       
     });
 });
 module.exports = router;

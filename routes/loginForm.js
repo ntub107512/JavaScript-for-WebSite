@@ -28,11 +28,19 @@ router.get('/', function(req, res, next) {
     // 如已經登入, 轉至首頁
     //------------------------------------------
     var memNo=req.session.memNo;
+    var memTitle=req.session.memTitle;
 
     if(authorize.isPass(req)){
-      pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
-        res.render('loginYes', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
-      });
+
+      if(memTitle=="大學生"){
+        pool.query('select * from tmember where memNo=?', [memNo], function(err, results) {
+          res.render('loginYes', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
+        });
+      }else{
+        pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
+          res.render('loginYesS', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});
+        });
+      }
       return;
   }
   //------------------------------------------

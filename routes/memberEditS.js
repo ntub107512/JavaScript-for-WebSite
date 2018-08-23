@@ -17,7 +17,7 @@ var pool = require('./lib/db.js');
 router.get('/', function(req, res, next) {
   var memNo=req.session.memNo;
   pool.query('select * from smember where memNo=?', [memNo], function(err, results) {
-    res.render('memberEditS', {memNo:req.session.memNo, memTitle:req.session.memTitle,picture:req.session.picture,data:results});  //導向更改成功頁面
+    res.render('memberEditS', {memNo:req.session.memNo, memTitle:req.session.memTitle,spicture:req.session.spicture,data:results});  //導向更改成功頁面
   }); 
 });
 
